@@ -17,6 +17,9 @@ public class TacticsMove : MonoBehaviour
     public float jumpHeight = 2;
     public float moveSpeed = 2;
 
+    Vector3 velocity = new Vector3();
+    Vector3 heading = new Vector3();
+
     float halfHeight = 0;
 
 
@@ -35,6 +38,7 @@ public class TacticsMove : MonoBehaviour
     {
         currentTile = GetTargetTile(gameObject);
         currentTile.current = true;
+        Debug.Log(currentTile);
     }
 
     public Tile GetTargetTile(GameObject target)
@@ -72,9 +76,11 @@ public class TacticsMove : MonoBehaviour
         currentTile.visited = true;
         //currentTile.parent = ??  leave as null 
 
+
         while (process.Count > 0)
         {
             Tile t = process.Dequeue();
+            Debug.Log(t);
 
             selectableTiles.Add(t);
             t.selectable = true;
@@ -107,5 +113,64 @@ public class TacticsMove : MonoBehaviour
             path.Push(next);
             next = next.parent;
         }
+    }
+
+    public void Move()
+    {
+        if (path.Count > 0)
+        {
+            //returns obj at the top of the stack without removing;
+            Tile t = path.Peek();
+            Vector3 target = t.transform.position;
+
+            //Calculate the units position on top of the target tile
+            target.y += halfHeight + t.GetComponent<Collider>().bounds.extents.y;
+
+            if (Vector3.Distance(transform.position, target) >= 0.05f)
+            {
+                CalculateHeading(target);
+                SetHorizontalVelocity();
+
+                transform.forward = heading;
+                transform.position += velocity * Time.deltaTime;
+            }
+            else
+            {
+                transform.position = target;
+                path.Pop();
+            }
+        }
+        else
+        {
+            RemoveSelectableTiles();
+            moving = false;
+        }
+    }
+
+    void SetHorizontalVelocity()
+    {
+        velocity = heading * moveSpeed;
+    }
+
+    void CalculateHeading(Vector3 target)
+    {
+        heading = target - transform.position;
+        heading.Normalize();
+    }
+
+    protected void RemoveSelectableTiles()
+    {
+        if(currentTile != null)
+        {
+            currentTile.current = false;
+            currentTile = null;
+        }
+
+        foreach (Tile tile in selectableTiles)
+        {
+            tile.Reset();
+        }
+
+        selectableTiles.Clear();
     }
 }
