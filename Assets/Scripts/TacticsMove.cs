@@ -181,16 +181,15 @@ public class TacticsMove : MonoBehaviour
             PrepareJump(target);
         }
     }
-
+    //34
     void PrepareJump(Vector3 target)
     {
         float targetY = target.y;
-
         target.y = transform.position.y;
 
         CalculateHeading(target);
 
-        if(transform.position.y > target.y)
+        if(transform.position.y > targetY)
         {
             fallingDown = false;
             jumpingUp = false;
@@ -219,6 +218,8 @@ public class TacticsMove : MonoBehaviour
         if(transform.position.y <= target.y)
         {
             fallingDown = false;
+            jumpingUp = false;
+            movingEdge = false;
 
             Vector3 p = transform.position;
             p.y = target.y;
@@ -241,7 +242,18 @@ public class TacticsMove : MonoBehaviour
 
     void MoveToEdge()
     {
-        throw new NotImplementedException();
+        if(Vector3.Distance(transform.position, jumpTarget) >= 0.05)
+        {
+            SetHorizontalVelocity();
+        }
+        else
+        {
+            movingEdge = false;
+            fallingDown = true;
+
+            velocity /= 4.0f;
+            velocity.y = 1.5f;
+        }
     }
 
     void SetHorizontalVelocity()
