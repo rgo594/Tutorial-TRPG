@@ -37,7 +37,7 @@ public class TacticsMove : MonoBehaviour
 
         halfHeight = GetComponent<Collider>().bounds.extents.y;
 
-        //TurnManager.AddUnit(this);
+        TurnManager.AddUnit(this);
     }
 
     public void GetCurrentTile()
@@ -158,6 +158,8 @@ public class TacticsMove : MonoBehaviour
         {
             RemoveSelectableTiles();
             moving = false;
+
+            TurnManager.EndTurn();
         }
     }
 
@@ -194,7 +196,8 @@ public class TacticsMove : MonoBehaviour
             fallingDown = false;
             jumpingUp = false;
             movingEdge = true;
-
+            
+            //gives us the edge of the tile
             jumpTarget = transform.position + (target - transform.position) / 2.0f;
         }
         else
@@ -281,5 +284,14 @@ public class TacticsMove : MonoBehaviour
         }
 
         selectableTiles.Clear();
+    }
+
+    public void BeginTurn()
+    {
+        turn = true;
+    }
+    public void EndTurn()
+    {
+        turn = false;
     }
 }
