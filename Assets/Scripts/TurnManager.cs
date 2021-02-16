@@ -11,16 +11,17 @@ public class TurnManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(turnTeam.Count == 0)
+        if (turnTeam.Count == 0)
         {
             InitTeamTurnQueue();
         }
+        StartTurn();
     }
 
     static void InitTeamTurnQueue()
@@ -32,7 +33,6 @@ public class TurnManager : MonoBehaviour
             turnTeam.Enqueue(unit);
         }
 
-        //Start
     }
 
     public static void StartTurn()
@@ -48,7 +48,7 @@ public class TurnManager : MonoBehaviour
         TacticsMove unit = turnTeam.Dequeue();
         unit.EndTurn();
 
-        if(turnTeam.Count > 0)
+        if (turnTeam.Count > 0)
         {
             StartTurn();
         }

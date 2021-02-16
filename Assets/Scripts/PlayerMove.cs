@@ -14,8 +14,7 @@ public class PlayerMove : TacticsMove
     void Update()
     {
         Debug.DrawRay(transform.position, transform.forward);
-
-        if(!turn)
+        if (!turn)
         {
             return;
         }

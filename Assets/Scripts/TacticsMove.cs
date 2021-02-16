@@ -66,7 +66,7 @@ public class TacticsMove : MonoBehaviour
         foreach (GameObject tile in tiles)
         {
             Tile t = tile.GetComponent<Tile>();
-            t.FindNeighbors(jumpHeight);
+            t.FindNeighbors(jumpHeight, target);
         }
     }
 
@@ -284,6 +284,87 @@ public class TacticsMove : MonoBehaviour
         }
 
         selectableTiles.Clear();
+    }
+    
+    protected Tile FindLowestF(List<Tile> list)
+    {
+        Tile lowest = list[0];
+
+        foreach (Tile t in list)
+        {
+            if (t.f < lowest.f)
+            {
+                lowest = t;
+            }
+        }
+
+        list.Remove(lowest);
+
+        return lowest;
+    }
+
+    protected void FindPath(Tile target)
+    {
+        ComputeAdjacencyLists(jumpHeight, target);
+        GetCurrentTile();
+
+        List<Tile> openList = new List<Tile>();
+        List<Tile> closedList = new List<Tile>();
+
+        openList.Add(currentTile);
+
+        currentTile.h = Vector3.Distance(currentTile.transform.position, target.transform.position);
+        currentTile.f = currentTile.h;
+
+        while (openList.Count > 0)
+        {
+            Tile t = FindLowestF(openList);
+
+            closedList.Add(t);
+
+            if (t == target)
+            {
+                //TODO
+                return;
+            }
+
+            foreach(Tile tile in t.adjacencyList)
+            {
+                if (closedList.Contains(tile))
+                {
+                    //do nothing, already processed
+                }
+                else if (openList.Contains(tile))
+                {
+                    //determines which path is better if multiple exists
+                    float tempG = t.g + Vector3.Distance(tile.transform.position, t.transform.position);
+
+                    if(tempG < tile.g)
+                    {
+                        tile.parent = t;
+
+                        tile.g = tempG;
+                        tile.f = tile.g + tile.h;
+                    }
+                }
+                else
+                {
+                    tile.parent = t;
+
+                    //distance to the beginning
+                    tile.g = t.g + Vector3.Distance(tile.transform.position, t.transform.position);
+                    //estimated distance to the end
+                    tile.h = Vector3.Distance(tile.transform.position, target.transform.position);
+                    tile.f = tile.g + tile.h;
+
+                    openList.Add(tile);
+                }
+            }
+        }
+
+        //18:20 part 6
+        //todo - what do you do if there is no path to the target tile
+        Debug.Log("Path not found");
     }
 
     public void BeginTurn()
