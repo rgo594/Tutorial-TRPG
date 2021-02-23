@@ -23,9 +23,10 @@ public class NPCMove : TacticsMove
          
         if (!moving)
         {
-            FindSelectableTiles();
-            CalculatePath();
             FindNearestTarget();
+            CalculatePath();
+            FindSelectableTiles();
+            actualTargetTile.target = true;
         }
         else
         {
@@ -34,8 +35,9 @@ public class NPCMove : TacticsMove
     }
     void CalculatePath()
     {
+        
         Tile targetTile = GetTargetTile(target);
-        //FindPath(targetTile);
+        FindPath(targetTile);
     }
 
     void FindNearestTarget()

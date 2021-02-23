@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+//mine
 public class TacticsMove : MonoBehaviour
 {
     public bool turn = false;
@@ -50,7 +50,7 @@ public class TacticsMove : MonoBehaviour
     {
         RaycastHit hit;
         Tile tile = null;
-
+        
         if (Physics.Raycast(target.transform.position, -Vector3.up, out hit, 1))
         {
             tile = hit.collider.GetComponent<Tile>();
@@ -303,7 +303,33 @@ public class TacticsMove : MonoBehaviour
         return lowest;
     }
 
-    protected void FindPath(Tile target)
+    protected Tile FindEndTile(Tile t)
+    {
+        Stack<Tile> tempPath = new Stack<Tile>();
+
+        Tile next = t.parent;
+        while (next != null)
+        {
+            tempPath.Push(next);
+            next = next.parent;
+
+        }
+
+        if(tempPath.Count <= move)
+        {
+            return t.parent;
+        }
+
+        Tile endTile = null;
+        for (int i=0; i<= move; i++)
+        {
+            endTile = tempPath.Pop();
+        }
+
+        return endTile;
+    }
+
+    public void FindPath(Tile target)
     {
         ComputeAdjacencyLists(jumpHeight, target);
         GetCurrentTile();
@@ -324,7 +350,8 @@ public class TacticsMove : MonoBehaviour
 
             if (t == target)
             {
-                //TODO
+                actualTargetTile = FindEndTile(t);
+                MoveToTile(actualTargetTile);
                 return;
             }
 
